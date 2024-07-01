@@ -1,0 +1,197 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id String @id @default(uuid())
+
+  name String
+  email String
+  token String?
+  password String
+  nik String?
+  avatar String?
+  address String?
+  code String
+  pob String?
+  dob DateTime?
+  phone String?
+  region String?   
+  role UserRole
+
+  division_id String?
+  division Division? @relation(fields: [division_id], references: [id])
+
+  company_id String?
+  company Company? @relation(fields: [company_id], references: [id])
+
+  deleted_at DateTime?
+  created_at DateTime @default(now())
+  update_at DateTime @updatedAt 
+  
+  attendance Attendance[]
+  shifting Shifting[]
+  log_activity LogActivity[]
+}
+
+model Company {
+  id String @id @default(uuid())
+  name String
+  location String
+  phone String
+  email String
+
+  // OWNER INFORMATION
+  owner_name String
+  owner_email String
+
+  // MAIN CONTACT INFORMATION
+  contact_name String
+  contact_phone String
+  contact_email String
+  contact_postion String
+
+  description String
+  code String
+
+  company_category_id String?
+  company_category CompanyCategory? @relation(fields: [company_category_id], references: [id])
+
+  user User[]
+  division Division[]
+  master_shifting MasterShifting[]
+  log_activity LogActivity[]
+
+  deleted_at DateTime?
+  created_at DateTime @default(now())
+  update_at DateTime @updatedAt 
+
+}
+
+model CompanyCategory{
+  id String @id @default(uuid())
+  name String
+  company Company[]
+}
+
+model Division {
+  id String @id @default(uuid())
+  name String
+  location String
+  code String
+  entry_time DateTime?
+  leave_time DateTime?
+
+  deleted_at DateTime?
+  created_at DateTime @default(now())
+  update_at DateTime @updatedAt 
+
+  company_id String
+  company Company @relation(fields: [company_id], references: [id])
+
+  user User[]
+
+}
+
+
+model Attendance {
+  id String @id @default(uuid())
+
+  image String?
+
+  entry_time DateTime
+  entry_status String
+  entry_location String
+
+  leave_time DateTime
+  leave_status String
+  leave_location String
+
+  user_id String
+  user User @relation(fields: [user_id], references: [id])
+  
+  deleted_at DateTime?
+  created_at DateTime @default(now())
+  update_at DateTime @updatedAt 
+}
+
+model MasterShifting {
+  id String @id @default(uuid())
+
+  name String
+  description String
+
+  entry_hours String
+  leave_hours String
+  
+  company_id String
+  company Company @relation(fields: [company_id], references: [id])
+
+  deleted_at DateTime?
+  created_at DateTime @default(now())
+  update_at DateTime @updatedAt 
+
+  shifting Shifting[]
+}
+
+
+model Shifting {
+  id String @id @default(uuid())
+
+  shifting_date_start DateTime
+  shifting_date_end DateTime
+  description String?
+
+  user_id String
+  user User @relation(fields: [user_id], references: [id])
+
+  master_shifting_id String
+  master_shifting MasterShifting @relation(fields: [master_shifting_id], references: [id])
+
+  deleted_at DateTime?
+  created_at DateTime @default(now())
+  update_at DateTime @updatedAt 
+}
+
+model LogActivity{
+  id String @id @default(uuid())
+
+  activity String
+  date DateTime
+  action_type LogActivityActionType
+  module String
+
+  user_id String
+  user User @relation(fields: [user_id], references: [id])
+  company_id String?
+  company Company? @relation(fields: [company_id], references: [id])
+
+  deleted_at DateTime?
+  created_at DateTime @default(now())
+  update_at DateTime @updatedAt 
+}
+
+
+enum LogActivityActionType{
+  create
+  update
+  delete
+}
+
+enum UserRole{
+  admin_internal
+  operator
+  employee
+}
