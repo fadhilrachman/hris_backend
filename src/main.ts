@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { setupAdminSwagger } from './admin-internal/swagger.admin';
-import { setupEmployeeSwagger } from './employee/swagger.employee';
+// import { setupEmployeeSwagger } from './employee/swagger.employee';
 import { setupOperatorSwagger } from './operator/swagger.operator';
 
 async function bootstrap() {
@@ -11,7 +11,7 @@ async function bootstrap() {
   setupAdminSwagger(app);
 
   /// EMPLOYEE SWAGGER
-  setupEmployeeSwagger(app);
+  // setupEmployeeSwagger(app);
 
   /// OPERATOR SWAGGER
   setupOperatorSwagger(app);

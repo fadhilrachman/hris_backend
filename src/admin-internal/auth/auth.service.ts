@@ -1,6 +1,4 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { RequestSignInDto } from './dto/request';
 import { DatabaseService } from 'src/database/database.service';
 import { errorHandler, errorResponse } from 'src/lib/response';
@@ -18,7 +16,7 @@ export class AuthService {
 
     // VALIDATION EMAIL
     const checkEmail = await this.databaseService.user.findFirst({
-      where: { email },
+      where: { email, role: 'admin_internal' },
     });
     if (!checkEmail)
       throw new UnauthorizedException(

@@ -6,10 +6,8 @@ import {
 } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ProjectModule } from './project/project.module';
 import { AdminInternalModule } from './admin-internal/admin-internal.module';
 import { OperatorModule } from './operator/operator.module';
-import { EmployeeModule } from './employee/employee.module';
 import { DatabaseModule } from './database/database.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AdminMiddleware } from './middleware/admin-middleware';
@@ -17,7 +15,6 @@ import { LogActivityModule } from './log-activity/log-activity.module';
 
 @Module({
   imports: [
-    ProjectModule,
     AdminInternalModule,
     OperatorModule,
     JwtModule.register({
@@ -25,7 +22,6 @@ import { LogActivityModule } from './log-activity/log-activity.module';
       secret: process.env.JWT_SECRET_KEY,
       signOptions: { expiresIn: '3d' },
     }),
-    EmployeeModule,
     DatabaseModule,
     LogActivityModule,
   ],

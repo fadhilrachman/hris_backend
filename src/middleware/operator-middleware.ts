@@ -25,7 +25,7 @@ export class AdminMiddleware implements NestMiddleware {
         secret: process.env.JWT_SECRET_KEY,
       });
 
-      if (checkAccesToken.role != 'admin_internal')
+      if (checkAccesToken.role != 'operator')
         throw new ForbiddenException({
           errors: [{ access: ['You cannot access this feature'] }],
         });
@@ -34,6 +34,7 @@ export class AdminMiddleware implements NestMiddleware {
 
       req.body.ip = req.ip;
       req.body.user_id = checkAccesToken.id;
+      req.body.company_id = checkAccesToken.company_id;
       next();
     } catch (error) {
       errorResponse({

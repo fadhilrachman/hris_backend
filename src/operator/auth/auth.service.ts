@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { RequestSignInDto } from './dto/request';
+import { DatabaseService } from 'src/database/database.service';
+import { errorHandler, errorResponse } from 'src/lib/response';
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private jwtService: JwtService,
+  ) {}
+  async signIn(createAuthDto: RequestSignInDto) {
+    const { email, password } = createAuthDto;
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+    // VALIDATION EMAIL
+    const checkEmail = await this.databaseService.user.findFirst({
+      where: { email, role: 'operator' },
+    });
+    if (!checkEmail)
+      throw new UnauthorizedException(
+        errorHandler({
+          errors: [{ data: ['Email or password not valid'] }],
+        }),
+      );
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    // VALIDATION PASSWORD
+    const checkPassword = await bcrypt.compare(password, checkEmail.password);
+    if (!checkPassword)
+      throw new UnauthorizedException(
+        errorHandler({
+          errors: [{ data: ['Email or password not valid'] }],
+        }),
+      );
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    // CREATE JWT TOKEN
+    const payloadJwt = {
+      id: checkEmail.id,
+      name: checkEmail.name,
+      role: checkEmail.role,
+      company_id: checkEmail.company_id,
+    };
+    const jwt = await this.jwtService.signAsync(payloadJwt);
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    return {
+      access_token: jwt,
+    };
   }
 }

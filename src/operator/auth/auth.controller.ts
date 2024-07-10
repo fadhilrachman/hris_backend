@@ -6,39 +6,46 @@ import {
   Patch,
   Param,
   Delete,
+  UsePipes,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { ValidationPipeCustom } from 'src/pipes/validation.pipe';
+import { SignIn, SignInUnathorizeDto, SuccessSignInDto } from './dto/response';
+import { RequestSignInDto } from './dto/request';
+import {
+  errorResponse,
+  sucessResponse,
+  SucessResponseType,
+} from 'src/lib/response';
+import { Request } from 'express';
 
 @ApiTags('Auth')
+@UsePipes(ValidationPipeCustom)
 @Controller('operator/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
-  }
+  @Post('sign-in')
+  @ApiOkResponse({ type: SuccessSignInDto })
+  @ApiBody({ type: RequestSignInDto })
+  @ApiUnauthorizedResponse({ type: SignInUnathorizeDto })
+  async signIn(
+    @Body() createAuthDto: RequestSignInDto,
+    @Req() request: Request,
+  ): Promise<SucessResponseType<SignIn>> {
+    try {
+      const result = await this.authService.signIn(createAuthDto);
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+      return sucessResponse({ data: result });
+    } catch (error) {
+      errorResponse({ errors: error });
+    }
   }
 }
