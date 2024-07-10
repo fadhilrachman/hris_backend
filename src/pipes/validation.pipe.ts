@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
-import { errorResponse } from '../../lib/response';
+import { errorHandler } from '../lib/response';
 // @Injectable()
 export class ValidationPipeCustom implements PipeTransform<any> {
   async transform(value: any, { metatype }: ArgumentMetadata) {
@@ -24,7 +24,7 @@ export class ValidationPipeCustom implements PipeTransform<any> {
 
     if (errors.length > 0) {
       throw new HttpException(
-        errorResponse({ errors: finallyResponseError }),
+        errorHandler({ errors: finallyResponseError }),
         400,
       );
     }

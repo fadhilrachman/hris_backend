@@ -54,16 +54,16 @@ model Company {
   email String
 
   // OWNER INFORMATION
-  owner_name String
-  owner_email String
+  owner_name String?
+  owner_email String?
 
   // MAIN CONTACT INFORMATION
-  contact_name String
-  contact_phone String
-  contact_email String
-  contact_postion String
+  contact_name String?
+  contact_phone String?
+  contact_email String?
+  contact_postion String?
 
-  description String
+  description String?
   code String
 
   company_category_id String?
@@ -169,10 +169,12 @@ model LogActivity{
   id String @id @default(uuid())
 
   activity String
-  date DateTime
-  action_type LogActivityActionType
+  date DateTime @default(now())
+  action_type String
   module String
-
+  ip String
+  previous_data Json?
+  new_data Json?
   user_id String
   user User @relation(fields: [user_id], references: [id])
   company_id String?
@@ -184,11 +186,7 @@ model LogActivity{
 }
 
 
-enum LogActivityActionType{
-  create
-  update
-  delete
-}
+
 
 enum UserRole{
   admin_internal

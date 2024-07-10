@@ -1,41 +1,200 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAdminDto } from './dto/request';
-import { UpdateAdminDto } from './dto/update-admin.dto';
 import { DatabaseService } from 'src/database/database.service';
 import * as bcrypt from 'bcrypt';
+import { createPagination } from 'src/lib/pagination';
+import { errorHandler } from 'src/lib/response';
+import { LogActivityService } from 'src/log-activity/log-activity.service';
+import { ADMIN_INTERNAL_ACTIVITY } from 'src/lib/constants';
 
 @Injectable()
 export class AdminService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+
+    private readonly logActivityService: LogActivityService,
+  ) {}
   async create(createAdminDto: CreateAdminDto) {
-    const { email, name, password } = createAdminDto;
+    const { email, name, password, ip, user_id } = createAdminDto;
+
+    const checkDuplicate = await this.databaseService.user.findFirst({
+      where: { email, deleted_at: null },
+    });
+
+    if (checkDuplicate)
+      throw new BadRequestException(
+        errorHandler({ errors: [{ email: ['User already exists'] }] }),
+      );
 
     const saltRounds = 10;
     const finallyPassword = await bcrypt.hash(password, saltRounds);
 
-    const payload = {
+    const payload: {
+      name: string;
+      email: string;
+      role: 'admin_internal';
+      password: string;
+    } = {
       name,
       email,
       role: 'admin_internal',
       password: finallyPassword,
     };
+    const result = await this.databaseService.$transaction(async (prisma) => {
+      // Query pertama
+      const user = await prisma.user.create({
+        data: { ...payload, code: '2334234' },
+      });
 
-    return payload;
+      await this.logActivityService.createLogActivity({
+        action_type: 'create',
+        activity: ADMIN_INTERNAL_ACTIVITY['admin_internal/admin'].create,
+        company_id: null,
+        date: new Date(),
+        module: 'admin-internal/admin',
+        new_data: payload,
+        previous_data: null,
+        user_id: user.id,
+        ip,
+      });
+
+      return user;
+    });
+
+    const { id, company_id, phone } = result;
+    return {
+      id,
+      name,
+      email,
+      company_id,
+      phone,
+    };
   }
 
-  findAll() {
-    return `This action returns all admin`;
+  async findAll({ page = 1, perPage = 10 }: { page: number; perPage: number }) {
+    /// PAGINATION
+    const skip = (page - 1) * perPage;
+    const pagination = createPagination({
+      page,
+      per_page: perPage,
+      total_data: await this.databaseService.user.count({
+        where: { role: 'admin_internal' },
+      }),
+    });
+
+    return {
+      data: await this.databaseService.user.findMany({
+        where: { role: 'admin_internal', deleted_at: null },
+        skip,
+        take: perPage,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          company_id: true,
+          // created_at: true,
+          // update_at: true,
+        },
+      }),
+      pagination,
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} admin`;
+  async findOne(id: string) {
+    const result = await this.databaseService.user.findUnique({
+      where: { id, deleted_at: null },
+    });
+    if (!result)
+      throw new NotFoundException(
+        errorHandler({ errors: [{ data: ['Data not found'] }] }),
+      );
+    const { company_id, phone, name, email } = result;
+    return {
+      id,
+      name,
+      email,
+      company_id,
+      phone,
+    };
   }
 
-  update(id: number, updateAdminDto: UpdateAdminDto) {
-    return `This action updates a #${id} admin`;
+  async update(id: string, updateAdminDto: CreateAdminDto) {
+    const { email, name, password } = updateAdminDto;
+
+    const checkDuplicate = await this.databaseService.user.findFirst({
+      where: { email },
+    });
+
+    if (checkDuplicate)
+      throw new BadRequestException(
+        errorHandler({ errors: [{ email: ['User already exists'] }] }),
+      );
+
+    // const saltRounds = 10;
+    // const finallyPassword = await bcrypt.hash(password, saltRounds);
+
+    const payload: {
+      name: string;
+      email: string;
+      role: 'admin_internal';
+    } = {
+      name,
+      email,
+      role: 'admin_internal',
+    };
+    const result = await this.databaseService.user.update({
+      where: { id },
+      data: { ...payload, code: '2334234' },
+    });
+
+    const { company_id, phone } = result;
+    return {
+      id,
+      name,
+      email,
+      company_id,
+      phone,
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} admin`;
+  async remove(user_id: string, data: { user_id: string; ip: string }) {
+    console.log({ user_id, data });
+
+    const [result, cuy] = await this.databaseService.$transaction([
+      this.databaseService.user.update({
+        where: { id: user_id, deleted_at: null },
+        data: { deleted_at: new Date() },
+      }),
+      this.logActivityService.createLogActivity({
+        action_type: 'delete',
+        activity: ADMIN_INTERNAL_ACTIVITY['admin_internal/admin'].delete,
+        company_id: null,
+        date: new Date(),
+        module: 'admin-internal/admin',
+        new_data: null,
+        previous_data: null,
+        user_id: data.user_id,
+        ip: data.ip,
+      }),
+    ]);
+
+    if (!result)
+      throw new NotFoundException(
+        errorHandler({ errors: [{ data: ['Data not found'] }] }),
+      );
+
+    const { email, name, company_id, phone } = result;
+    return {
+      id: user_id,
+      name,
+      email,
+      company_id,
+      phone,
+    };
   }
 }
