@@ -78,31 +78,6 @@ export class AdminController {
     }
   }
 
-  @Get()
-  @ApiOkResponse({
-    type: AdminSuccessResponseDto,
-  })
-  @ApiQuery({ name: 'page', type: 'string', required: false })
-  @ApiQuery({ name: 'per_page', type: 'string', required: false })
-  async findAll(
-    @Query('page') page: string,
-    @Query('per_page') per_page: string,
-  ): Promise<SucessResponseType<Admin>> {
-    const pageNum = Number(page) || 1;
-    const perPageNum = Number(per_page) || 10;
-
-    try {
-      const result = await this.adminService.findAll({
-        page: pageNum,
-        perPage: perPageNum,
-      });
-
-      return sucessResponse<Admin>(result);
-    } catch (error) {
-      throw new HttpException('error', 400);
-    }
-  }
-
   @Get(':user_id')
   @ApiOkResponse({
     type: SuccessCreateAdminResponseDto,

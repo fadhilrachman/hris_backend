@@ -6,7 +6,7 @@ type ModuleAdminIntertalType =
   | 'admin-internal/transaction';
 
 type ModuleOperatorType =
-  | 'operator/directorate'
+  | 'operator/division'
   | 'operator/attendance'
   | 'operator/employee'
   | 'operator/admin';

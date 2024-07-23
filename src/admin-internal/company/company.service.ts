@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { createPagination } from 'src/lib/pagination';
@@ -7,6 +11,8 @@ import { createCode } from 'src/lib/create-code';
 import { LogActivityService } from 'src/log-activity/log-activity.service';
 import { ADMIN_INTERNAL_ACTIVITY } from 'src/lib/constants';
 import { errorHandler } from 'src/lib/response';
+import { CreateAdminDto } from '../admin/dto/request';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class CompanyService {
@@ -41,6 +47,63 @@ export class CompanyService {
     });
 
     return result;
+  }
+  async createOperator(createAdminDto: CreateAdminDto, company_id: string) {
+    const { email, name, password, ip, user_id } = createAdminDto;
+
+    const checkDuplicate = await this.databaseService.user.findFirst({
+      where: { email, deleted_at: null },
+    });
+
+    if (checkDuplicate)
+      throw new BadRequestException(
+        errorHandler({ errors: [{ email: ['User already exists'] }] }),
+      );
+
+    const saltRounds = 10;
+    const finallyPassword = await bcrypt.hash(password, saltRounds);
+
+    const payload: {
+      name: string;
+      email: string;
+      role: 'operator';
+      password: string;
+    } = {
+      name,
+      email,
+      role: 'operator',
+      password: finallyPassword,
+    };
+    const result = await this.databaseService.$transaction(async (prisma) => {
+      // Query pertama
+      const user = await prisma.user.create({
+        data: { ...payload, code: '2334234', company_id },
+      });
+
+      await this.logActivityService.createLogActivity({
+        action_type: 'create',
+        activity:
+          ADMIN_INTERNAL_ACTIVITY['admin_internal/company']['create-operator'],
+        company_id,
+        date: new Date(),
+        module: 'admin-internal/company',
+        new_data: user as object,
+        previous_data: null,
+        user_id,
+        ip,
+      });
+
+      return user;
+    });
+
+    const { id, phone } = result;
+    return {
+      id,
+      name,
+      email,
+      company_id,
+      phone,
+    };
   }
 
   async findAll({

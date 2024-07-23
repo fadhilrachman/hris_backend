@@ -29,6 +29,7 @@ import {
 } from './dto/response';
 import { errorHandler, errorResponse, sucessResponse } from 'src/lib/response';
 import { createCode } from 'src/lib/create-code';
+import { CreateAdminDto } from '../admin/dto/request';
 
 @ApiTags('Company')
 @ApiBearerAuth('access-token')
@@ -41,6 +42,24 @@ export class CompanyController {
   async create(@Body() createCompanyDto: CreateCompanuDto) {
     try {
       const result = await this.companyService.create(createCompanyDto);
+      return sucessResponse({ data: result });
+    } catch (error) {
+      console.log({ error });
+
+      errorResponse({ errors: error });
+    }
+  }
+  @Post('create-operator/:company_id')
+  @ApiBody({ type: CreateAdminDto })
+  async createOperator(
+    @Body() createCompanyDto: CreateAdminDto,
+    @Param('company_id') company_id: string,
+  ) {
+    try {
+      const result = await this.companyService.createOperator(
+        createCompanyDto,
+        company_id,
+      );
       return sucessResponse({ data: result });
     } catch (error) {
       console.log({ error });

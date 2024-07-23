@@ -9,6 +9,7 @@ export const ADMIN_INTERNAL_ACTIVITY = {
     update: 'Update Company',
     delete: 'Delete Company',
     import: 'Import Company',
+    'create-operator': 'Create Operator',
   },
 };
 
@@ -18,10 +19,22 @@ export const OPERATOR_ACTIVITY = {
     update: 'Update Admin',
     delete: 'Delete Admin',
   },
+  ['operator/employee']: {
+    create: 'Create Employee',
+    update: 'Update Employee',
+    delete: 'Delete Employee',
+    'change-password': 'Change Password Employee',
+  },
   ['operator/company']: {
     crete: 'Create Company',
     update: 'Update Company',
     delete: 'Delete Company',
     import: 'Import Company',
+  },
+  ['operator/division']: {
+    crete: 'Create Division',
+    update: 'Update Division',
+    delete: 'Delete Division',
+    import: 'Import Division',
   },
 };

@@ -5,13 +5,15 @@ import { DatabaseService } from 'src/database/database.service';
 import { errorHandler, errorResponse } from 'src/lib/response';
 
 @Injectable()
-export class AdminMiddleware implements NestMiddleware {
+export class OperatorMiddleware implements NestMiddleware {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly jwtService: JwtService,
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
+    console.log('INI MIDDLEWARE OPERATOR');
+
     try {
       const token = req.headers['authorization'];
 
@@ -25,16 +27,16 @@ export class AdminMiddleware implements NestMiddleware {
         secret: process.env.JWT_SECRET_KEY,
       });
 
-      if (checkAccesToken.role != 'operator')
+      if (checkAccesToken.role != 'operator' && !checkAccesToken.company_id)
         throw new ForbiddenException({
           errors: [{ access: ['You cannot access this feature'] }],
         });
 
-      req['user'] = checkAccesToken;
+      req['user'] = { ...checkAccesToken, ip: req.ip };
 
-      req.body.ip = req.ip;
-      req.body.user_id = checkAccesToken.id;
-      req.body.company_id = checkAccesToken.company_id;
+      // req.body.ip = req.ip;
+      // req.body.user_id = checkAccesToken.id;
+      // req.body.company_id = checkAccesToken.company_id;
       next();
     } catch (error) {
       errorResponse({

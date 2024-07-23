@@ -12,6 +12,8 @@ export class AdminMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
+    console.log('INI MIDDLEWRE');
+
     try {
       const token = req.headers['authorization'];
 

@@ -1,6 +1,9 @@
 const LIST_CODE = {
   ['admin-internal/company']: 'COMP',
   ['admin-internal/admin']: 'ADM',
+  ['operator/divison']: 'DIV',
+  ['operator/admin']: 'ADM',
+  ['operator/employee']: 'EMP',
 };
 type CodeKeys = keyof typeof LIST_CODE;
 

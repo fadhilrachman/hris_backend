@@ -12,6 +12,7 @@ import { DatabaseModule } from './database/database.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AdminMiddleware } from './middleware/admin-middleware';
 import { LogActivityModule } from './log-activity/log-activity.module';
+import { OperatorMiddleware } from './middleware/operator-middleware';
 
 @Module({
   imports: [
@@ -31,10 +32,10 @@ import { LogActivityModule } from './log-activity/log-activity.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AdminMiddleware).forRoutes(
-      {
-        path: 'admin-internal/admin',
-        method: RequestMethod.ALL,
-      },
+      // {
+      //   path: 'admin-internal/admin',
+      //   method: RequestMethod.ALL,
+      // },
       { path: 'admin-internal/admin/:user_id', method: RequestMethod.ALL },
 
       {
@@ -42,7 +43,22 @@ export class AppModule implements NestModule {
         method: RequestMethod.ALL,
       },
       {
-        path: 'admin-internal/company/:idCompany',
+        path: 'admin-internal/company/:company_id',
+        method: RequestMethod.ALL,
+      },
+      {
+        path: 'admin-internal/company/create-operator/:company_id',
+        method: RequestMethod.ALL,
+      },
+    );
+
+    consumer.apply(OperatorMiddleware).forRoutes(
+      {
+        path: 'operator/division',
+        method: RequestMethod.ALL,
+      },
+      {
+        path: 'operator/division/:division_id',
         method: RequestMethod.ALL,
       },
     );

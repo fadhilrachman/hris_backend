@@ -9,6 +9,17 @@ export function setupOperatorSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
     .setTitle('Operator API')
     .setDescription('Operator API documentation')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'access-token-operator',
+    )
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config, {

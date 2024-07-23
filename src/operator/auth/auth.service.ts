@@ -18,6 +18,8 @@ export class AuthService {
     const checkEmail = await this.databaseService.user.findFirst({
       where: { email, role: 'operator' },
     });
+    console.log({ checkEmail });
+
     if (!checkEmail)
       throw new UnauthorizedException(
         errorHandler({
@@ -36,7 +38,7 @@ export class AuthService {
 
     // CREATE JWT TOKEN
     const payloadJwt = {
-      id: checkEmail.id,
+      user_id: checkEmail.id,
       name: checkEmail.name,
       role: checkEmail.role,
       company_id: checkEmail.company_id,

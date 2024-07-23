@@ -6,41 +6,60 @@ import {
   Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
-import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { ChangePasswordEmployeeDto, CreateEmployeeDto } from './dto/request';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  EmployeeSuccessFindOneResponseDto,
+  EmployeeSuccessResponseDto,
+} from './dto/response';
 
 @ApiTags('Employee')
-@Controller('employee')
+@Controller('operator/employee')
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
   @Post()
+  // @ApiOkResponse({type:})
+  @ApiBody({ type: CreateEmployeeDto })
   create(@Body() createEmployeeDto: CreateEmployeeDto) {
     return this.employeeService.create(createEmployeeDto);
   }
 
   @Get()
+  @ApiOkResponse({ type: EmployeeSuccessResponseDto })
   findAll() {
     return this.employeeService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(':employee_id')
+  @ApiOkResponse({ type: EmployeeSuccessFindOneResponseDto })
+  findOne(@Param('employee_id') id: string) {
     return this.employeeService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Put(':employee_id')
+  @ApiBody({ type: CreateEmployeeDto })
   update(
-    @Param('id') id: string,
+    @Param('employee_id') id: string,
     @Body() updateEmployeeDto: UpdateEmployeeDto,
   ) {
     return this.employeeService.update(+id, updateEmployeeDto);
   }
 
-  @Delete(':id')
+  @Patch(':employee_id/change-password')
+  @ApiBody({ type: ChangePasswordEmployeeDto })
+  changePassword(
+    @Param('employee_id') id: string,
+    @Body() updateEmployeeDto: UpdateEmployeeDto,
+  ) {
+    return this.employeeService.update(+id, updateEmployeeDto);
+  }
+
+  @Delete(':employee_id')
   remove(@Param('id') id: string) {
     return this.employeeService.remove(+id);
   }
