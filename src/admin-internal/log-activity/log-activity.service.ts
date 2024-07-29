@@ -34,6 +34,7 @@ export class LogActivityService {
           user: {
             // include:
             select: {
+              avatar: true,
               id: true,
               name: true,
               nik: true,
@@ -61,6 +62,7 @@ export class LogActivityService {
         user: {
           // include:
           select: {
+            avatar: true,
             id: true,
             name: true,
             nik: true,

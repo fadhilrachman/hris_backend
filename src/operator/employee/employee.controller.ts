@@ -22,18 +22,18 @@ import {
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
-  @Post()
-  // @ApiOkResponse({type:})
-  @ApiBody({ type: CreateEmployeeDto })
-  create(@Body() createEmployeeDto: CreateEmployeeDto) {
-    return this.employeeService.create(createEmployeeDto);
-  }
+  // @Post()
+  // // @ApiOkResponse({type:})
+  // @ApiBody({ type: CreateEmployeeDto })
+  // create(@Body() createEmployeeDto: CreateEmployeeDto) {
+  //   return this.employeeService.create(createEmployeeDto);
+  // }
 
-  @Get()
-  @ApiOkResponse({ type: EmployeeSuccessResponseDto })
-  findAll() {
-    return this.employeeService.findAll();
-  }
+  // @Get()
+  // @ApiOkResponse({ type: EmployeeSuccessResponseDto })
+  // findAll() {
+  //   return this.employeeService.findAll();
+  // }
 
   @Get(':employee_id')
   @ApiOkResponse({ type: EmployeeSuccessFindOneResponseDto })

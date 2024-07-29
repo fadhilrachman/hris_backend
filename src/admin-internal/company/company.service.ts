@@ -57,7 +57,7 @@ export class CompanyService {
 
     if (checkDuplicate)
       throw new BadRequestException(
-        errorHandler({ errors: [{ email: ['User already exists'] }] }),
+        errorHandler({ errors: [{ email: ['Email already exists'] }] }),
       );
 
     const saltRounds = 10;
@@ -84,7 +84,7 @@ export class CompanyService {
         action_type: 'create',
         activity:
           ADMIN_INTERNAL_ACTIVITY['admin_internal/company']['create-operator'],
-        company_id,
+        company_id: null,
         date: new Date(),
         module: 'admin-internal/company',
         new_data: user as object,

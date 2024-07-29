@@ -13,6 +13,9 @@ class User {
 
   @ApiProperty({ example: '21455' })
   nik: string;
+
+  @ApiProperty({ example: 'example' })
+  avatar: string;
 }
 
 export class LogActivity {

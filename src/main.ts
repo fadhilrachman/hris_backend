@@ -5,7 +5,7 @@ import { setupAdminSwagger } from './admin-internal/swagger.admin';
 import { setupOperatorSwagger } from './operator/swagger.operator';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true  });
 
   /// ADMIN INTERNAL SWAGGER
   setupAdminSwagger(app);

@@ -22,7 +22,6 @@ export class AdminMiddleware implements NestMiddleware {
           errors: [{ token: ['token is not valid'] }],
         });
       const finallyToken = token.split(' ')[1];
-
       const checkAccesToken = await this.jwtService.verify(finallyToken, {
         secret: process.env.JWT_SECRET_KEY,
       });
