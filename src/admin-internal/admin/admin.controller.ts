@@ -78,6 +78,26 @@ export class AdminController {
     }
   }
 
+  @Get()
+  @ApiOkResponse({ type: AdminSuccessResponseDto })
+  @ApiQuery({ name: 'page', type: 'string', required: false })
+  @ApiQuery({ name: 'per_page', type: 'string', required: false })
+  // @ApiQuery({ name: 'search', type: 'string', required: false })
+  async findAll(
+    @Query('page') page: string,
+    @Query('per_page') per_page: string,
+    // @Query('search') search: string,
+  ) {
+    const pageNum = Number(page) || 1;
+    const perPageNum = Number(per_page) || 10;
+    try {
+      const result = await this.adminService.findAll({
+        page: pageNum,
+        perPage: perPageNum,
+      });
+      return sucessResponse<Admin>(result);
+    } catch (error) {}
+  }
   @Get(':user_id')
   @ApiOkResponse({
     type: SuccessCreateAdminResponseDto,
@@ -108,10 +128,8 @@ export class AdminController {
   //   try {
 
   //   } catch (error) {
-
   //   }
   //   // return this.adminService.update(+id, updateAdminDto);
-
   // }
 
   @Delete(':user_id')

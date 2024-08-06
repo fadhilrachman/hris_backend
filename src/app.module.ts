@@ -32,10 +32,10 @@ import { OperatorMiddleware } from './middleware/operator-middleware';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AdminMiddleware).forRoutes(
-      // {
-      //   path: 'admin-internal/admin',
-      //   method: RequestMethod.ALL,
-      // },
+      {
+        path: 'admin-internal/admin',
+        method: RequestMethod.ALL,
+      },
       { path: 'admin-internal/admin/:user_id', method: RequestMethod.ALL },
 
       {
