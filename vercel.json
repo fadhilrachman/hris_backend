@@ -1,5 +1,9 @@
 {
   "version": 2,
+  "env": {
+    "DATABASE_URL": "mysql://admin:Admin123!@hrisdev.cjog0guiewj0.ap-southeast-2.rds.amazonaws.com:3306/hrisdev",
+    "JWT_SECRET_KEY": "kmaldmlsafmlalmlkdd.i34i"
+  },
   "builds": [
     {
       "src": "src/main.ts",
