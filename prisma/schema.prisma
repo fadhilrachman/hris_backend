@@ -66,6 +66,8 @@ model Company {
   description String?
   code String
 
+  is_freeze Boolean @default(false)
+
   company_category_id String?
   company_category CompanyCategory? @relation(fields: [company_category_id], references: [id])
 

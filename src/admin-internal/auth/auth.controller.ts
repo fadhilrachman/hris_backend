@@ -45,6 +45,8 @@ export class AuthController {
 
       return sucessResponse({ data: result });
     } catch (error) {
+      console.log({ error });
+
       errorResponse({ errors: error });
     }
   }

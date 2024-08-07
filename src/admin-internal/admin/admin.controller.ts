@@ -67,8 +67,8 @@ export class AdminController {
     @Req() request,
   ): Promise<SucessResponseType<Admin>> {
     try {
-      createAdminDto.ip = request.ip;
-      createAdminDto.user_id = request.user.id;
+      // createAdminDto.ip = request.ip;
+      // createAdminDto.user_id = request.user.id;
       const result = await this.adminService.create(createAdminDto);
 
       return sucessResponse({ data: result });

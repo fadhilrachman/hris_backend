@@ -28,7 +28,6 @@ import {
   CompanySuccessResponseDto,
 } from './dto/response';
 import { errorHandler, errorResponse, sucessResponse } from 'src/lib/response';
-import { createCode } from 'src/lib/create-code';
 import { CreateAdminDto } from '../admin/dto/request';
 
 @ApiTags('Company')
