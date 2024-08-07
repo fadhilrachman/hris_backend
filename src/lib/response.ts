@@ -36,6 +36,13 @@ export const sucessResponse = <T>({
   };
 };
 
+export const sucessWriteResponse = <T>({
+  data,
+}: SucessResponseType<T>): SucessResponseType<T> => {
+  return {
+    data,
+  };
+};
 export const errorHandler = ({
   errors,
 }: ErrorResponseType): ErrorResponseType => {

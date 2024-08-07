@@ -61,6 +61,14 @@ export class AppModule implements NestModule {
         path: 'operator/division/:division_id',
         method: RequestMethod.ALL,
       },
+      {
+        path: 'operator/employee',
+        method: RequestMethod.ALL,
+      },
+      {
+        path: 'operator/employee/:employee_id',
+        method: RequestMethod.ALL,
+      },
     );
   }
 }

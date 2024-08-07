@@ -18,7 +18,7 @@ model User {
   id String @id @default(uuid())
 
   name String
-  email String @unique
+  email String 
   token String?
   password String
   nik String?
@@ -29,6 +29,7 @@ model User {
   dob DateTime?
   phone String?
   region String?   
+  job_title String?
   role UserRole
 
   division_id String?

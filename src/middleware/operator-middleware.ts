@@ -27,6 +27,8 @@ export class OperatorMiddleware implements NestMiddleware {
         secret: process.env.JWT_SECRET_KEY,
       });
 
+      console.log({ checkAccesToken });
+
       if (checkAccesToken.role != 'operator' && !checkAccesToken.company_id)
         throw new ForbiddenException({
           errors: [{ access: ['You cannot access this feature'] }],

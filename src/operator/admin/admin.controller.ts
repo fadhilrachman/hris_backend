@@ -41,12 +41,6 @@ import {
   SuccessCreateAdminResponseDto,
 } from './dto/response';
 import { MessageError, NotFoundError } from 'src/lib/shared-dto';
-import { Request } from 'express';
-
-interface User {
-  id: number;
-  name: string;
-}
 
 @ApiTags('Admin')
 @ApiBearerAuth('access-token')

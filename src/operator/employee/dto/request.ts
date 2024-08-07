@@ -33,6 +33,52 @@ export class CreateEmployeeDto {
 
   @ApiProperty({ example: 'garut' })
   pob?: string;
+
+  @ApiProperty({ example: 'frontend' })
+  job_title?: string;
+
+  @ApiProperty({ example: 'garut' })
+  region?: string;
+}
+
+export class UpdateEmployeeDto {
+  @Length(2, 100)
+  @IsNotEmpty()
+  @ApiProperty({ example: 'example' })
+  name: string;
+
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'example',
+    description: 'nik will be used as a password',
+  })
+  email: string;
+
+  @ApiProperty({ example: 'https://avatar.png' })
+  avatar?: string;
+
+  @ApiProperty({ example: 'garut' })
+  address?: string;
+
+  @ApiProperty({ example: '12345678' })
+  phone?: string;
+
+  @ApiProperty({ example: '2024-06-19T05:00:36.556Z' })
+  dob?: Date;
+
+  @ApiProperty({ example: 'garut' })
+  pob?: string;
+
+  @ApiProperty({ example: 'frontend' })
+  job_title?: string;
+
+  @ApiProperty({ example: 'garut' })
+  region?: string;
+}
+
+export class ImportEmployeeDto {
+  @ApiProperty({ example: [CreateEmployeeDto] })
+  data: CreateEmployeeDto[];
 }
 
 export class ChangePasswordEmployeeDto {
